@@ -76,7 +76,13 @@ namespace ObjectDumping.Internal
                 }
                 else
                 {
-                    var publicFields = element.GetType().GetRuntimeFields().Where(f => !f.IsPrivate);
+                    var publicFields = element.GetType().GetRuntimeFields()/*.Where(f => !f.IsPrivate)*/;
+                    if (this.DumpOptions.ExcludeProperties != null && this.DumpOptions.ExcludeProperties.Any())
+                    {
+                        publicFields = publicFields
+                            .Where(p => !this.DumpOptions.ExcludeProperties.Contains(p.Name))
+                            .ToList();
+                    }
                     foreach (var fieldInfo in publicFields)
                     {
                         var value = fieldInfo.TryGetValue(element);
